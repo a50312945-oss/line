@@ -5,5 +5,5 @@
   "display": "standalone",
   "background_color": "#11261e",
   "theme_color": "#11261e",
-  "description": "計算電流、對照線徑與銅牌的手機版小工具（可加入主畫面，離線可用）。"
+  "description": "容量↔電流互算、線徑與銅牌對照的手機版小工具（可加入主畫面，離線可用）。"
 }
