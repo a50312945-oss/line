@@ -1,0 +1,9 @@
+{
+  "name": "電流小工具",
+  "short_name": "電流小工具",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#11261e",
+  "theme_color": "#11261e",
+  "description": "計算電流、對照線徑與銅牌的手機版小工具（可加入主畫面，離線可用）。"
+}

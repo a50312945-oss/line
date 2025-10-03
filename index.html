@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>電流小工具｜手機版</title>
+  <meta name="theme-color" content="#11261e">
+  <link rel="manifest" href="manifest.webmanifest">
+  <style>
+    :root{--bg:#0f241d;--panel:#173428;--text:#e7f1ec;--muted:#b8cdc4;--border:#2f5347;--accent:#2e5f4f;--btn:#2b5a4b;--combo-bg:#dff5e1;--combo-fg:#000}
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:"Microsoft JhengHei","Noto Sans TC","PingFang TC","Heiti TC",system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial,sans-serif}
+    .wrap{max-width:540px;margin:0 auto;padding:16px}
+    .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:14px;margin-bottom:14px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+    .title{margin:0 0 6px;font-weight:700;font-size:20px;letter-spacing:.5px}
+    .sub{color:var(--muted);font-size:13px;margin-top:4px}
+    label{display:block;font-size:14px;margin:12px 0 6px}
+    input[type=number],input[type=text],select{width:100%;padding:14px;border-radius:12px;border:1px solid var(--border);background:#0b1c16;color:var(--text);font-size:16px;outline:none}
+    select{background:var(--combo-bg);color:var(--combo-fg)}.row{display:flex;gap:10px}.row>*{flex:1}
+    .checkbox{display:flex;align-items:center;gap:8px;color:var(--text);font-size:14px;margin-top:8px}
+    button{width:100%;padding:15px;border:none;border-radius:14px;background:var(--btn);color:var(--text);font-size:18px;font-weight:700;letter-spacing:.5px;cursor:pointer;margin-top:14px}
+    button:active{transform:translateY(1px);background:var(--accent)}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;font-size:16px}
+    .result{white-space:pre-line;line-height:1.8;min-height:5lh}.badge{display:inline-block;background:var(--accent);padding:2px 8px;border-radius:999px;font-size:12px;margin-left:6px}
+    .footer{color:var(--muted);font-size:12px;line-height:1.6}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1 class="title">電流小工具<span class="badge">PWA</span></h1>
+      <div>
+        <label for="w">容量 (W)</label>
+        <input id="w" type="number" inputmode="decimal" placeholder="例如：15000">
+        <label for="vs">電壓系統 (V)</label>
+        <select id="vs">
+          <option value="">choose：請選擇</option>
+          <option value="4W_380">4W_380：三相四線 220/380V（V=380，/√3）</option>
+          <option value="3W_220">3W_220：三相三線 220V（V=220，/√3）</option>
+          <option value="1P3W_220">1P3W_220：單相三線 220V（V=220）</option>
+          <option value="custom">custom：自訂 V（請在下方輸入；可勾三相）</option>
+        </select>
+        <label for="v">自訂 V</label>
+        <div class="row"><input id="v" type="number" inputmode="decimal" placeholder="選 custom 才需輸入"></div>
+        <label class="checkbox"><input id="is3" type="checkbox"> 自訂為三相（/√3）</label>
+        <button id="calc">計算</button>
+        <div class="sub">公式：三相 I = (W / V) / √3 × 1.25；單相 I = (W / V) × 1.25。</div>
+      </div>
+    </div>
+    <div class="card">
+      <h2 class="title" style="font-size:18px">結果</h2>
+      <div id="out" class="mono result">按「計算」後將顯示：
+1. 電流值:
+2. 適用線徑:
+3. 適用銅牌:</div>
+    </div>
+    <div class="card footer">線徑表使用三相三線/三相四線容量；單相三線套用三相三線欄位。若沒有對應線徑，請增大規格或採並聯。</div>
+  </div>
+  <script src="app.js" defer></script>
+</body>
+</html>
