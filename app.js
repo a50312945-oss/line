@@ -24,7 +24,7 @@ function calc(){
       const wire=pickWire(I,B===4); const bus=pickBusbar(I);
       const line1=`1.電流值:${prettyAmp(I)}(A)`;
       const line2=`2.適用線徑:XLPE${wire?(' '+wire):'（無對應，請增大規格或改並聯）'}${wire?' mm²':''}`;
-      const line3=bus?`3.適用銅牌:[Cu bus ${bus.w}×${bus.t} mm × ${bus.p}片/相]x_${B}`:`3.適用銅牌:（無對應，請增大規格）`;
+      const line3=bus?`3.適用銅排:[Cu bus ${bus.w}×${bus.t} mm × ${bus.p}片/相]x_${B}`:`3.適用銅排:（無對應，請增大規格）`;
       out.textContent=[line1,line2,line3].join('\n');
     }else{
       const I=parseFloat(document.getElementById('amps').value);
@@ -34,7 +34,7 @@ function calc(){
       const wire=pickWire(I,B===4); const bus=pickBusbar(I);
       const line1=`1.容量:${prettyNum(kW)}(kW)`;
       const line2=`2.適用線徑:XLPE${wire?(' '+wire):'（無對應，請增大規格或改並聯）'}${wire?' mm²':''}`;
-      const line3=bus?`3.適用銅牌:[Cu bus ${bus.w}×${bus.t} mm × ${bus.p}片/相]x_${B}`:`3.適用銅牌:（無對應，請增大規格）`;
+      const line3=bus?`3.適用銅排:[Cu bus ${bus.w}×${bus.t} mm × ${bus.p}片/相]x_${B}`:`3.適用銅排:（無對應，請增大規格）`;
       out.textContent=[line1,line2,line3].join('\n');
     }
   }catch(e){ out.textContent='⚠️ '+e.message; }
