@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+    <title>電流計算工具</title>
+    <meta name="description" content="專業的電流與容量計算工具，支援三相四線、三相三線、單相三線系統"/>
+    
+    <!-- PWA 主題色 -->
+    <meta name="theme-color" content="#030C08">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#030C08">
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#0d2419">
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="./manifest.webmanifest">
+    
+    <!-- Favicons - 標準尺寸 -->
+    <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="./icon-96.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./icon-72.png">
+    <link rel="shortcut icon" href="./icon-192.png">
+    
+    <!-- Apple Touch Icons - iOS -->
+    <link rel="apple-touch-icon" href="./icon-192.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="./icon-192.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="./icon-152.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="./icon-144.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="./icon-128.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="./icon-128.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="./icon-96.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="./icon-72.png">
+    
+    <!-- iOS PWA 設定 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="電流計算">
+    
+    <!-- Android/Windows -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="電流計算工具">
+    <meta name="msapplication-TileColor" content="#030C08">
+    <meta name="msapplication-TileImage" content="./icon-144.png">
+    <meta name="msapplication-config" content="./browserconfig.xml">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="電流計算工具">
+    <meta property="og:description" content="專業的電流與容量計算工具">
+    <meta property="og:image" content="./icon-512.png">
+    <meta property="og:type" content="website">
+    
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        tech: {
+                            bg: "#030C08",
+                            panel: "#0A1912",
+                            surface: "#11291F",
+                            border: "#1F4232",
+                            text: "#9CA3AF",
+                            heading: "#F0FDF4"
+                        },
+                        soft: {
+                            primary: "#D4AF37",
+                            secondary: "#10B981",
+                            accent: "#F59E0B",
+                            highlight: "#FEFCE8",
+                            purple: "#047857",
+                        },
+                    },
+                    fontFamily: {
+                        sans: ["'Noto Sans TC'", "'Inter'", "sans-serif"],
+                        mono: ["'JetBrains Mono'", "monospace"],
+                    },
+                    boxShadow: {
+                        'soft-glow': '0 0 40px -10px rgba(212, 175, 55, 0.15)',
+                        'card': '0 10px 40px -10px rgba(0,0,0,0.4)',
+                    },
+                    animation: {
+                        'float': 'float 10s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                },
+            },
+        };
+    </script>
+    
+    <style>
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #1F4232; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #D4AF37; }
+        
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            min-height: max(884px, 100dvh);
+        }
+        
+        .blob {
+            position: absolute;
+            filter: blur(80px);
+            z-index: 0;
+            opacity: 0.4;
+            border-radius: 50%;
+            animation: float 15s infinite ease-in-out alternate;
+        }
+    </style>
+</head>
+
+<body class="bg-tech-bg text-tech-text min-h-screen relative font-sans selection:bg-soft-primary selection:text-tech-bg overflow-x-hidden">
+    <!-- 背景裝飾 Blobs -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden">
+        <div class="blob w-64 h-64 bg-soft-primary/10 top-[-10%] left-[-10%]"></div>
+        <div class="blob w-80 h-80 bg-soft-purple/20 bottom-[-10%] right-[-10%]" style="animation-delay: -5s;"></div>
+        <div class="blob w-48 h-48 bg-soft-secondary/10 top-[40%] left-[20%]" style="animation-delay: -8s;"></div>
+    </div>
+
+    <div class="max-w-md mx-auto min-h-screen flex flex-col px-6 py-10 pb-32 relative z-10">
+        <!-- Header -->
+        <header class="mb-10">
+            <div class="flex items-center gap-2 mb-3">
+                <span class="w-1.5 h-1.5 rounded-full bg-soft-primary"></span>
+                <span class="text-[10px] font-semibold tracking-[0.2em] text-soft-primary/80 uppercase">Calculator v2.1</span>
+            </div>
+            <h1 class="text-3xl font-bold tracking-tight text-tech-heading leading-tight">
+                電流 <span class="text-soft-primary font-normal">&</span><br/>
+                容量計算
+            </h1>
+        </header>
+
+        <main class="flex-grow space-y-6">
+            <!-- 模式切換 -->
+            <div class="p-1.5 rounded-2xl bg-tech-panel/60 backdrop-blur-sm border border-tech-border/40 flex shadow-sm">
+                <button id="tab-fw" onclick="switchMode('fw')" class="flex-1 py-3 rounded-xl bg-tech-surface text-tech-heading shadow-sm font-medium text-sm tracking-wide transition-all duration-300 border border-tech-border/50">
+                    容量 → 電流
+                </button>
+                <button id="tab-bw" onclick="switchMode('bw')" class="flex-1 py-3 rounded-xl text-tech-text/70 font-medium text-sm hover:text-tech-heading transition-colors tracking-wide">
+                    電流 → 容量
+                </button>
+            </div>
+
+            <!-- 輸入表單 -->
+            <div class="space-y-5">
+                <!-- 容量輸入（正向模式） -->
+                <div id="panel-fw" class="group relative">
+                    <label class="flex justify-between text-[10px] font-semibold uppercase tracking-widest text-tech-text/70 mb-2 ml-1">
+                        <span>目標負載容量</span>
+                        <span class="text-soft-primary opacity-0 group-focus-within:opacity-100 transition-opacity duration-300">輸入中</span>
+                    </label>
+                    <div class="relative transition-all duration-300">
+                        <input 
+                            id="input-watts"
+                            class="block w-full px-5 py-4 text-xl font-mono bg-tech-panel/40 border border-tech-border rounded-2xl focus:ring-2 focus:ring-soft-primary/20 focus:border-soft-primary text-tech-heading placeholder-tech-text/30 transition-all shadow-sm outline-none" 
+                            placeholder="0" 
+                            type="number"
+                            step="0.01"
+                        />
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-5 pointer-events-none">
+                            <span class="text-[10px] font-bold text-soft-primary bg-soft-primary/10 px-2.5 py-1 rounded-full tracking-wider">WATTS</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 電流輸入（反向模式） -->
+                <div id="panel-bw" class="group relative hidden">
+                    <label class="flex justify-between text-[10px] font-semibold uppercase tracking-widest text-tech-text/70 mb-2 ml-1">
+                        <span>目標電流值</span>
+                        <span class="text-soft-primary opacity-0 group-focus-within:opacity-100 transition-opacity duration-300">輸入中</span>
+                    </label>
+                    <div class="relative transition-all duration-300">
+                        <input 
+                            id="input-amps"
+                            class="block w-full px-5 py-4 text-xl font-mono bg-tech-panel/40 border border-tech-border rounded-2xl focus:ring-2 focus:ring-soft-primary/20 focus:border-soft-primary text-tech-heading placeholder-tech-text/30 transition-all shadow-sm outline-none" 
+                            placeholder="0" 
+                            type="number"
+                            step="0.01"
+                        />
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-5 pointer-events-none">
+                            <span class="text-[10px] font-bold text-soft-secondary bg-soft-secondary/10 px-2.5 py-1 rounded-full tracking-wider">AMPS</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 電壓系統選擇 -->
+                <div class="group relative">
+                    <label class="flex justify-between text-[10px] font-semibold uppercase tracking-widest text-tech-text/70 mb-2 ml-1">
+                        <span>系統電壓</span>
+                        <span class="text-soft-primary opacity-0 group-focus-within:opacity-100 transition-opacity duration-300">配置</span>
+                    </label>
+                    <div class="relative transition-all duration-300">
+                        <select 
+                            id="voltage-select"
+                            class="block w-full px-5 py-4 text-xl font-mono bg-tech-panel/40 border border-tech-border rounded-2xl focus:ring-2 focus:ring-soft-primary/20 focus:border-soft-primary text-tech-heading appearance-none cursor-pointer transition-all shadow-sm outline-none"
+                        >
+                            <option disabled selected value="">請選擇系統</option>
+                            <option value="4W_380">三相四線 220/380V</option>
+                            <option value="3W_220">三相三線 220V</option>
+                            <option value="1P3W_220">單相三線 220V</option>
+                            <option value="custom">自訂電壓</option>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center px-5 pointer-events-none text-tech-text/60">
+                            <span class="material-symbols-outlined text-xl">unfold_more</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 自訂電壓輸入 -->
+                <div id="custom-voltage-container" class="opacity-50 pointer-events-none transition-all duration-300">
+                    <div class="relative">
+                        <input 
+                            id="custom-voltage"
+                            class="block w-full px-5 py-3 text-base font-mono bg-tech-panel/30 border border-tech-border rounded-xl focus:ring-1 focus:ring-soft-primary/50 focus:border-soft-primary text-tech-heading placeholder-tech-text/30 transition-colors" 
+                            disabled 
+                            placeholder="輸入自訂電壓值" 
+                            type="number"
+                            step="0.01"
+                        />
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-5 pointer-events-none">
+                            <span class="text-xs font-mono text-tech-text/60">V</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 三相模式開關 -->
+                <div class="flex items-center justify-between py-3 px-1 border-t border-dashed border-tech-border/40 mt-2">
+                    <div class="flex items-center gap-2.5">
+                        <span class="material-symbols-outlined text-tech-text/60 text-lg">hub</span>
+                        <span class="font-medium text-sm text-tech-text tracking-wide">三相系統模式</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input class="sr-only peer" id="three-phase" type="checkbox"/>
+                        <div class="w-11 h-6 bg-tech-panel border border-tech-border peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-tech-text after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-soft-primary/20 peer-checked:after:bg-soft-primary peer-checked:border-soft-primary/30 transition-all shadow-inner"></div>
+                    </label>
+                </div>
+
+                <!-- 計算按鈕 -->
+                <button 
+                    onclick="calculate()"
+                    class="w-full py-4 relative overflow-hidden rounded-2xl group transition-all duration-300 transform active:scale-[0.98] bg-soft-primary text-tech-bg shadow-lg shadow-soft-primary/20 hover:shadow-soft-primary/40 hover:bg-soft-primary/90 mt-2"
+                >
+                    <div class="relative flex justify-center items-center gap-2 font-semibold text-base uppercase tracking-widest">
+                        <span>開始計算</span>
+                        <span class="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                    </div>
+                </button>
+
+                <!-- 公式提示 -->
+                <div class="flex justify-center gap-6 opacity-60 hover:opacity-100 transition-opacity duration-300 pt-1">
+                    <div class="text-[10px] font-mono text-tech-text flex items-center gap-1">
+                        <span class="w-1 h-1 rounded-full bg-soft-primary"></span>
+                        <span>3相: (W/V)/√3 × 1.25</span>
+                    </div>
+                    <div class="text-[10px] font-mono text-tech-text flex items-center gap-1">
+                        <span class="w-1 h-1 rounded-full bg-soft-secondary"></span>
+                        <span>1相: (W/V) × 1.25</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 結果顯示 -->
+            <div class="relative mt-8 group">
+                <div class="absolute inset-0 bg-gradient-to-r from-soft-primary/10 via-soft-purple/10 to-soft-secondary/10 rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                <div class="relative bg-tech-panel/80 backdrop-blur-xl rounded-3xl p-6 border border-white/5 overflow-hidden shadow-card transition-all duration-300 group-hover:border-white/10">
+                    <div class="absolute top-0 right-0 p-4 opacity-10">
+                        <svg fill="none" height="60" viewBox="0 0 60 60" width="60" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="30" cy="30" r="29" stroke="white" stroke-width="1"></circle>
+                            <circle cx="30" cy="30" r="15" stroke="white" stroke-width="1"></circle>
+                        </svg>
+                    </div>
+                    
+                    <h2 class="text-xs font-bold uppercase tracking-widest text-tech-text/60 mb-6 flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 rounded-full bg-soft-secondary animate-pulse"></span>
+                        系統分析結果
+                    </h2>
+                    
+                    <div class="space-y-6 relative z-10">
+                        <!-- 主要結果 -->
+                        <div class="flex justify-between items-end border-b border-white/5 pb-4">
+                            <span class="text-[10px] font-semibold uppercase tracking-widest text-tech-text/60 mb-1" id="result-label">計算電流</span>
+                            <div class="text-right flex items-baseline gap-2">
+                                <span id="result-value" class="text-5xl font-mono font-bold text-tech-heading tracking-tighter drop-shadow-sm">--</span>
+                                <span id="result-unit" class="text-xs font-bold text-soft-primary bg-soft-primary/10 px-2 py-0.5 rounded">AMPS</span>
+                            </div>
+                        </div>
+                        
+                        <!-- 線徑與銅排 -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-tech-surface/50 p-4 rounded-2xl border border-white/5 hover:bg-tech-surface hover:border-soft-primary/20 transition-all group/item">
+                                <span class="block text-[10px] font-bold tracking-wider text-tech-text/50 mb-2 group-hover/item:text-soft-primary transition-colors">適用線徑 (XLPE)</span>
+                                <div class="flex items-baseline gap-1">
+                                    <span id="wire-size" class="text-xl font-mono font-semibold text-white">--</span>
+                                    <span class="text-[10px] text-tech-text/40">mm²</span>
+                                </div>
+                            </div>
+                            <div class="bg-tech-surface/50 p-4 rounded-2xl border border-white/5 hover:bg-tech-surface hover:border-soft-purple/20 transition-all group/item">
+                                <span class="block text-[10px] font-bold tracking-wider text-tech-text/50 mb-2 group-hover/item:text-soft-purple transition-colors">適用銅排</span>
+                                <div class="flex flex-col gap-0.5">
+                                    <span id="busbar-spec" class="text-sm font-mono font-semibold text-white leading-tight">--</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 說明提示 -->
+            <div class="flex gap-3 px-4 py-3 bg-soft-primary/5 rounded-2xl border border-soft-primary/10 items-start">
+                <span class="material-symbols-outlined text-soft-primary/60 text-sm mt-0.5 shrink-0">info</span>
+                <p class="text-[11px] text-tech-text/80 leading-relaxed font-medium">
+                    線徑表使用三相三線/三相四線容量；單相三線套用三相三線欄位。若沒有對應線徑，請增大規格或採並聯方式。
+                </p>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
